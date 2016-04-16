@@ -19,16 +19,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(new RenderableView(this) {
             @Override
             public void view() {
-               linearLayout(() -> {
-                   size(MATCH, MATCH);
-                   orientation(LinearLayout.VERTICAL);
-
-                   listView(() -> {
-                       size(FILL, WRAP);
-                       adapter(new ArrayAdapter<>(
-                            MainActivity.this, android.R.layout.simple_list_item_1, workoutNames)) ;
-                   });
-               });
+                linearLayout(() -> {
+                    size(MATCH, MATCH);
+                    orientation(LinearLayout.VERTICAL);
+                    listView(() -> {
+                        size(FILL, WRAP);
+                        adapter(new ArrayAdapter<>(
+                                MainActivity.this, android.R.layout.simple_list_item_1, workoutNames));
+                    });
+                });
             }
         });
     }
