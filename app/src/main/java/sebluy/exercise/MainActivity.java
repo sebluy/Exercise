@@ -11,24 +11,20 @@ import static trikita.anvil.DSL.*;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String[] workoutNames = {"Static Core", "Calisthenic"};
+    private MainState state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new RenderableView(this) {
-            @Override
-            public void view() {
-                linearLayout(() -> {
-                    size(MATCH, MATCH);
-                    orientation(LinearLayout.VERTICAL);
-                    listView(() -> {
-                        size(FILL, WRAP);
-                        adapter(new ArrayAdapter<>(
-                                MainActivity.this, android.R.layout.simple_list_item_1, workoutNames));
-                    });
-                });
-            }
-        });
+        state = MainState.create(MainState.Page.HOME);
+        setContentView(new View(this));
+    }
+
+    public MainState state() {
+        return state;
+    }
+
+    public void navigate(String pageName) {
+        state = MainState.create(MainState.Page.CALISTHENIC_EXERCISE);
     }
 }
