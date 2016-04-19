@@ -57,7 +57,7 @@ public class CalisthenicView {
         }
     }
 
-    public static View view(MainActivity a, MainState.Page.CalisthenicPageState pageState) {
+    public static View view(MainActivity a, MainState.Page.State.Calisthenic pageState) {
         List<CalisthenicExercise> workout = pageState.workout();
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(a.getSupportFragmentManager()) {
             @Override

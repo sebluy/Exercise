@@ -1,7 +1,7 @@
 Todo:
 
-Add storage for current exercise so can be reconstructed on rotate, app kill, etc...
-- Use hawk to store state on onSaveInstanceState
+Implement static core and running workouts.
 
-finish deserializing for gson, make gson main state pass
-- try some autovalue gson goodies
+Implement persistent storage for workout "templates" (find good name, maybe seed).
+
+Maintain fragment # on rotate/kill.
