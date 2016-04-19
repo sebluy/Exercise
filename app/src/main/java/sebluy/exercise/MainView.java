@@ -1,36 +1,31 @@
 package sebluy.exercise;
 
-import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 
-import fj.data.Seq;
-
-import static trikita.anvil.DSL.FILL;
-import static trikita.anvil.DSL.MATCH;
-import static trikita.anvil.DSL.WRAP;
-import static trikita.anvil.DSL.adapter;
-import static trikita.anvil.DSL.linearLayout;
-import static trikita.anvil.DSL.listView;
-import static trikita.anvil.DSL.onItemClick;
-import static trikita.anvil.DSL.orientation;
-import static trikita.anvil.DSL.size;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class MainView {
 
-    private static final Seq<String> workoutNames = Seq.arraySeq("Calisthenic");
+    private static final List<String> workoutNames =
+            Collections.unmodifiableList(Arrays.asList("Calisthenic"));
 
-    public static void view(MainActivity a) {
-        linearLayout(() -> {
-            size(MATCH, MATCH);
-            orientation(LinearLayout.VERTICAL);
-            listView(() -> {
-                size(FILL, WRAP);
-                onItemClick((parent, v, pos, id) -> a.navigate(workoutNames.index(pos)));
-                adapter(new ArrayAdapter<>(a,
-                        android.R.layout.simple_list_item_1,
-                        workoutNames.toJavaList()));
-            });
-        });
+    public static View view(MainActivity a) {
+        ListView list = new ListView(a);
+
+        list.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        list.setOnItemClickListener((parent, v, pos, id) -> a.navigate(workoutNames.get(pos)));
+        list.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_list_item_1, workoutNames));
+
+        return list;
+
     }
 }

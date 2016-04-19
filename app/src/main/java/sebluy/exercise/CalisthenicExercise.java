@@ -1,16 +1,20 @@
 package sebluy.exercise;
 
+import android.os.Parcelable;
+
 import com.google.auto.value.AutoValue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import fj.data.Seq;
-import fj.data.Stream;
+import auto.parcelgson.AutoParcelGson;
 
-@AutoValue
-public abstract class CalisthenicExercise {
+@AutoParcelGson
+public abstract class CalisthenicExercise implements Parcelable {
 
     public enum Type {PUSH_UP, PULL_UP, CORE, SQUAT, LUNGE}
 
@@ -18,117 +22,154 @@ public abstract class CalisthenicExercise {
     abstract static class Template {
         public abstract int repetitions();
         public abstract int sets();
-        public abstract Seq<String> variations();
+        public abstract List<String> variations();
 
-        static Template create(int r, int s, Seq<String> v) {
+        static Template create(int r, int s, List<String> v) {
             return new AutoValue_CalisthenicExercise_Template(r, s, v);
         }
     }
 
-    private static final Template pushUp = Template.create(6, 6, Seq.arraySeq(
-            "Normal Push-up",
-            "Knuckle Push-up",
-            "Wide Push-up",
-            "Diamond Push-up",
-            "T Push-up",
-            "Pike Push-Up",
-            "Dive Bomber Push-Up"
-    ));
+    private static final Template pushUp = Template.create(8, 6,
+            Collections.unmodifiableList(Arrays.asList(
+                    "Normal Push-up",
+                    "Knuckle Push-up",
+                    "Wide Push-up",
+                    "Diamond Push-up",
+                    "T Push-up",
+                    "Pike Push-Up",
+                    "Dive Bomber Push-Up"
+    )));
 
-    private static final Template pullUp = Template.create(4, 6, Seq.arraySeq(
-            "Normal Pull-Up",
-            "Narrow Pull-Up",
-            "Parallel Pull-Up",
-            "Wide Pull-Up",
-            "Normal Chin-Up",
-            "Narrow Chin-Up"
-    ));
+    private static final Template pullUp = Template.create(6, 5,
+            Collections.unmodifiableList(Arrays.asList(
+                    "Normal Pull-Up",
+                    "Narrow Pull-Up",
+                    "Parallel Pull-Up",
+                    "Wide Pull-Up",
+                    "Normal Chin-Up",
+                    "Narrow Chin-Up"
+    )));
 
-    private static final Template core = Template.create(14, 6, Seq.arraySeq(
-            "Normal Crunch",
-            "Reverse Crunch",
-            "Double Crunch",
-            "Bicycle Crunch",
-            "Wiper",
-            "Flutter Kick"
-    ));
+    private static final Template core = Template.create(18, 5,
+            Collections.unmodifiableList(Arrays.asList(
+                    "Normal Crunch",
+                    "Reverse Crunch",
+                    "Double Crunch",
+                    "Bicycle Crunch",
+                    "Wiper",
+                    "Flutter Kick"
+    )));
 
-    private static final Template squat = Template.create(12, 6, Seq.arraySeq(
-            "Squat",
-            "Vertical Jump",
-            "Forward Jump",
-            "Lateral Jump"
-    ));
+    private static final Template squat = Template.create(16, 5,
+            Collections.unmodifiableList(Arrays.asList(
+                    "Squat",
+                    "Vertical Jump",
+                    "Forward Jump",
+                    "Lateral Jump"
+    )));
 
-    private static final Template lunge = Template.create(14, 6, Seq.arraySeq(
-            "Forward Lunge",
-            "Backward Lunge",
-            "Side Lunge"
-    ));
+    private static final Template lunge = Template.create(18, 5,
+            Collections.unmodifiableList(Arrays.asList(
+                    "Forward Lunge",
+                    "Backward Lunge",
+                    "Side Lunge"
+    )));
 
-    private static final HashMap<Type, Template> templates = new HashMap<>();
+    private static final Map<Type, Template> templates;
     static {
-        templates.put(Type.PUSH_UP, pushUp);
-        templates.put(Type.PULL_UP, pullUp);
-        templates.put(Type.CORE, core);
-        templates.put(Type.SQUAT, squat);
-        templates.put(Type.LUNGE, lunge);
+        Map<Type, Template> t = new HashMap<>();
+        t.put(Type.PUSH_UP, pushUp);
+        t.put(Type.PULL_UP, pullUp);
+        t.put(Type.CORE, core);
+        t.put(Type.SQUAT, squat);
+        t.put(Type.LUNGE, lunge);
+        templates = Collections.unmodifiableMap(t);
     }
 
-    private static <E> ArrayList<E> seqToArrayList(Seq<E> s) {
-        ArrayList<E> l = new ArrayList<>();
-        for (E value : s) {
-            l.add(value);
+    private static final List<Type> order =
+            Collections.unmodifiableList(
+                    Arrays.asList(Type.PUSH_UP, Type.SQUAT, Type.CORE, Type.PULL_UP, Type.LUNGE));
+
+    private static class VariationStream {
+
+        private final List<String> variations;
+        private int index;
+
+        public VariationStream(List<String> v) {
+            variations = v;
+            index = 0;
         }
-        return l;
+
+        public String next() {
+            String ret = variations.get(index);
+            if (index == variations.size() - 1) {
+                index = 0;
+            } else {
+                index++;
+            }
+            return ret;
+        }
     }
 
-    /* Returns an infinite stream of random variations given a type.
+    /* Returns an infinite stream of random variations.
     * The variations are shuffled into a random order and then repeated
     * infinitely.
     */
-    private static Stream<String> randomVariations(Seq<String> variations) {
-        ArrayList<String> l = seqToArrayList(variations);
+    private static VariationStream randomVariations(List<String> variations) {
+        List<String> l = new ArrayList<>(variations);
         Collections.shuffle(l);
-        return Stream.cycle(Stream.iterableStream(l));
+        return new VariationStream(l);
     }
 
-    /* Returns a seq formed by taking a single element in order from each sub-seq
-    * until all sub-seqs are empty.
+    /* Returns a list formed by taking a single element in order from each sub-list
+    * until all sub-lists are empty.
     */
-    public static <E> Seq<E> interleave(Seq<Seq<E>> ss) {
-        Seq<E> result = Seq.empty();
-        int maxLength = ss.map(Seq::length).foldLeft((b, a) -> b > a ? b : a, 0);
-        for (int j = 0; j < maxLength; j++) {
-            for (int i = 0; i < ss.length(); i++) {
-                Seq<E> s = ss.index(i);
-                if (j < s.length()) {
-                    result = result.snoc(s.index(j));
+    public static <E> List<E> interleave(List<List<E>> ll) {
+        List<E> result = new ArrayList<>();
+        int maxSize = 0;
+        for (List<E> l : ll) {
+            maxSize = maxSize > l.size() ? maxSize : l.size();
+        }
+        for (int j = 0; j < maxSize; j++) {
+            for (int i = 0; i < ll.size(); i++) {
+                List<E> l = ll.get(i);
+                if (j < l.size()) {
+                    result.add(l.get(j));
                 }
             }
         }
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
-    private static Seq<CalisthenicExercise> buildExerciseSeq(Type type) {
+    public static List<CalisthenicExercise> buildExercises(Type type) {
         Template template = templates.get(type);
-        return Seq.iterableSeq(randomVariations(template.variations()).
-                take(template.sets()).
-                map(variation -> CalisthenicExercise.create(type, template.repetitions(), variation)));
+        List<CalisthenicExercise> exercises = new ArrayList<>();
+        VariationStream variations = randomVariations(template.variations());
+        int sets = template.sets();
+        for (int set = 1; set <= sets; set++) {
+            String variation = variations.next();
+            int extraReps = (set == sets ? sets : 0);
+            int reps = template.repetitions() + extraReps;
+            exercises.add(CalisthenicExercise.create(type, reps, set, variation));
+        }
+        return Collections.unmodifiableList(exercises);
     }
 
-    public static Seq<CalisthenicExercise> generateWorkout() {
-        return interleave(
-                Seq.arraySeq(Type.PUSH_UP, Type.SQUAT, Type.CORE, Type.PULL_UP, Type.LUNGE).
-                map(CalisthenicExercise::buildExerciseSeq));
+    public static List<CalisthenicExercise> generateWorkout() {
+        List<List<CalisthenicExercise>> ll = new ArrayList<>();
+        for (Type t : order) {
+            ll.add(buildExercises(t));
+        }
+        return interleave(ll);
     }
 
     public abstract Type type();
     public abstract int repetitions();
+    public abstract int set();
     public abstract String name();
 
-    public static CalisthenicExercise create(Type t, int r, String n) {
-        return new AutoValue_CalisthenicExercise(t, r, n);
+    public static CalisthenicExercise create(Type t, int r, int s, String n) {
+        return new AutoParcelGson_CalisthenicExercise(t, r, s, n);
     }
 
 }

@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId "sebluy.exercise"
         minSdkVersion 19
-        targetSdkVersion 23
+        targetSdkVersion 19
         versionCode 1
         versionName "1.0"
     }
@@ -41,6 +41,7 @@ android {
 repositories {
     jcenter()
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
 retrolambda {
@@ -52,9 +53,12 @@ retrolambda {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
+    compile 'com.github.orhanobut:hawk:1.23'
     compile 'com.android.support:appcompat-v7:23.3.0'
-    compile 'co.trikita:anvil-sdk19:0.3.2'
+    compile 'com.android.support:support-v4:23.3.0'
     compile "org.functionaljava:functionaljava:4.5"
     provided "com.google.auto.value:auto-value:1.2"
     apt "com.google.auto.value:auto-value:1.2"
+    compile 'me.tatarka:auto-parcel-gson:0.1'
+    apt 'me.tatarka:auto-parcel-gson-processor:0.1'
 }

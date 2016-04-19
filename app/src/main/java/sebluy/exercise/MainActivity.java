@@ -1,13 +1,12 @@
 package sebluy.exercise;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
+import android.support.v7.app.AppCompatActivity;
 
-import trikita.anvil.RenderableView;
-
-import static trikita.anvil.DSL.*;
+import com.orhanobut.hawk.GsonParser;
+import com.orhanobut.hawk.Hawk;
+import com.orhanobut.hawk.HawkBuilder;
+import com.orhanobut.hawk.LogLevel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -16,8 +15,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        state = MainState.create(MainState.Page.HOME);
-        setContentView(new View(this));
+
+        if (!Hawk.isBuilt()) {
+            Hawk.init(this)
+                    .setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
+                    .setStorage(HawkBuilder.newSharedPrefStorage(this))
+                    .setLogLevel(LogLevel.NONE)
+                    .setParser(new GsonParser(GsonConverter.buildGson()))
+                    .build();
+        }
+
+        state = Hawk.get("main-state", MainState.init());
+        render();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (state.history().isEmpty()) {
+            finish();
+        } else {
+            state = state.back();
+            render();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle b) {
+        Hawk.put("main-state", state);
+        super.onSaveInstanceState(b);
+    }
+
+    private void render() {
+        setContentView(TopView.view(this));
     }
 
     public MainState state() {
@@ -25,6 +54,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void navigate(String pageName) {
-        state = MainState.create(MainState.Page.CALISTHENIC_EXERCISE);
+        switch (pageName) {
+            case "Calisthenic":
+                state = state.navigate(MainState.Page.ID.CALISTHENIC_EXERCISE);
+                break;
+            default:
+                state = state.navigate(MainState.Page.ID.HOME);
+                break;
+        }
+        render();
     }
+
 }
