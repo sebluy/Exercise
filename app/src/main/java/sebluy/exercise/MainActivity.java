@@ -65,4 +65,7 @@ public class MainActivity extends AppCompatActivity {
         render();
     }
 
+    public void setCalisthenicExercise(int position) {
+        state = state.setCalisthenicExercise(position);
+    }
 }

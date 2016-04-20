@@ -27,12 +27,17 @@ public abstract class MainState {
             @AutoParcelGson
             abstract class Calisthenic implements State {
                 public abstract List<CalisthenicExercise> workout();
+                public abstract int exerciseIndex();
 
-                public static Calisthenic create(List<CalisthenicExercise> w) {
-                    return new AutoParcelGson_MainState_Page_State_Calisthenic(w);
+                public static Calisthenic create(List<CalisthenicExercise> w, int i) {
+                    return new AutoParcelGson_MainState_Page_State_Calisthenic(w, i);
                 }
             }
 
+        }
+
+        public State.Calisthenic calisthenicPageState() {
+            return (State.Calisthenic)pageState();
         }
 
         public abstract ID ID();
@@ -61,13 +66,26 @@ public abstract class MainState {
         switch (id) {
             case CALISTHENIC_EXERCISE:
                 p = Page.create(Page.ID.CALISTHENIC_EXERCISE,
-                        Page.State.Calisthenic.create(CalisthenicExercise.generateWorkout()));
+                        Page.State.Calisthenic.create(CalisthenicExercise.generateWorkout(), 0));
                 break;
             default:
                 p = Page.create(Page.ID.HOME, Page.State.Empty.create());
                 break;
         }
         return MainState.create(p, history().cons(page()));
+    }
+
+    public MainState setCalisthenicExercise(int position) {
+        if (page().ID() == Page.ID.CALISTHENIC_EXERCISE) {
+            Page.State.Calisthenic pageState = page().calisthenicPageState();
+            return MainState.create(
+                    Page.create(
+                            Page.ID.CALISTHENIC_EXERCISE,
+                            Page.State.Calisthenic.create(pageState.workout(), position)),
+                    history());
+        } else {
+            return this;
+        }
     }
 
     public MainState back() {

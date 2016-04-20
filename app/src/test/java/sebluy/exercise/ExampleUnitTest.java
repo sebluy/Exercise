@@ -46,8 +46,16 @@ public class ExampleUnitTest {
         assertGsonEquals(gson, state, MainState.class);
         state = gson.fromJson(gson.toJson(state), MainState.class);
         List<CalisthenicExercise> w = ((MainState.Page.State.Calisthenic)state.page().pageState()).workout();
-//        w.remove(0);
-//        System.out.println(w);
+    }
+
+    @Test
+    public void setCalisthenicExercise() throws Exception {
+        MainState state = MainState
+                .init()
+                .navigate(MainState.Page.ID.CALISTHENIC_EXERCISE)
+                .setCalisthenicExercise(4);
+
+        assertEquals(state.page().calisthenicPageState().exerciseIndex(), 4);
     }
 
 }

@@ -8,8 +8,7 @@ public class TopView {
         MainState.Page page = activity.state().page();
         switch (page.ID()) {
             case CALISTHENIC_EXERCISE:
-                return CalisthenicView.view(activity,
-                        (MainState.Page.State.Calisthenic)page.pageState());
+                return CalisthenicView.view(activity, page.calisthenicPageState());
             default:
                 return MainView.view(activity);
         }

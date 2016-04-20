@@ -57,8 +57,8 @@ public class CalisthenicView {
         }
     }
 
-    public static View view(MainActivity a, MainState.Page.State.Calisthenic pageState) {
-        List<CalisthenicExercise> workout = pageState.workout();
+    public static View view(MainActivity a, MainState.Page.State.Calisthenic state) {
+        List<CalisthenicExercise> workout = state.workout();
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(a.getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
@@ -73,6 +73,13 @@ public class CalisthenicView {
         ViewPager pager = new ViewPager(a);
         pager.setAdapter(adapter);
         pager.setId(View.generateViewId());
+        pager.setCurrentItem(state.exerciseIndex());
+        pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                a.setCalisthenicExercise(position);
+            }
+        });
         return pager;
     }
 }
