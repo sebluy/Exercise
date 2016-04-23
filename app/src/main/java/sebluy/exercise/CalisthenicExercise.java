@@ -29,7 +29,7 @@ public abstract class CalisthenicExercise implements Parcelable {
         }
     }
 
-    private static final Template pushUp = Template.create(8, 6,
+    private static final Template pushUp = Template.create(9, 6,
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Push-up",
                     "Knuckle Push-up",
@@ -40,7 +40,7 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Dive Bomber Push-Up"
     )));
 
-    private static final Template pullUp = Template.create(6, 5,
+    private static final Template pullUp = Template.create(8, 4,
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Pull-Up",
                     "Narrow Pull-Up",
@@ -50,7 +50,7 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Narrow Chin-Up"
     )));
 
-    private static final Template core = Template.create(18, 5,
+    private static final Template core = Template.create(20, 5,
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Crunch",
                     "Reverse Crunch",
@@ -60,7 +60,7 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Flutter Kick"
     )));
 
-    private static final Template squat = Template.create(16, 5,
+    private static final Template squat = Template.create(18, 5,
             Collections.unmodifiableList(Arrays.asList(
                     "Squat",
                     "Vertical Jump",
@@ -68,7 +68,7 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Lateral Jump"
     )));
 
-    private static final Template lunge = Template.create(18, 5,
+    private static final Template lunge = Template.create(20, 5,
             Collections.unmodifiableList(Arrays.asList(
                     "Forward Lunge",
                     "Backward Lunge",

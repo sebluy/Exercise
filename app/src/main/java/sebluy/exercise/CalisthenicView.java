@@ -8,6 +8,8 @@ import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -17,8 +19,6 @@ import android.widget.TextView;
 import java.util.List;
 
 public class CalisthenicView {
-
-    /* replace with anvil-app-compat-v4 once pushed */
 
     public static class ExerciseFragment extends Fragment {
         @Override
@@ -82,4 +82,9 @@ public class CalisthenicView {
         });
         return pager;
     }
+
+    public static void updateMenu(Menu menu) {
+        menu.add("Commit").setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+    }
+
 }

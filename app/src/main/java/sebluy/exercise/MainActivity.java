@@ -2,6 +2,8 @@ package sebluy.exercise;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.orhanobut.hawk.GsonParser;
 import com.orhanobut.hawk.Hawk;
@@ -11,6 +13,7 @@ import com.orhanobut.hawk.LogLevel;
 public class MainActivity extends AppCompatActivity {
 
     private MainState state;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +29,19 @@ public class MainActivity extends AppCompatActivity {
         }
 
         state = Hawk.get("main-state", MainState.init());
+
+        /* intial render in onCreateOptionsMenu because android calls onCreate before
+         * onCreateOptionsMenu and we need the menu to render.
+         */
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu m) {
+        super.onCreateOptionsMenu(m) ;
+        m.add("Commit").setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+        menu = m;
         render();
+        return true;
     }
 
     @Override
@@ -46,11 +61,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void render() {
-        setContentView(TopView.view(this));
-    }
-
-    public MainState state() {
-        return state;
+        setContentView(TopView.view(this, state));
+        TopView.updateMenu(menu, state);
     }
 
     public void navigate(String pageName) {
