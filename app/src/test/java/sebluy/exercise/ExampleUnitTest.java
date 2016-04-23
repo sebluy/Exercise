@@ -1,15 +1,10 @@
 package sebluy.exercise;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import org.junit.Test;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -42,7 +37,9 @@ public class ExampleUnitTest {
         Gson gson = GsonConverter.buildGson();
         MainState state = MainState.init();
         assertGsonEquals(gson, state, MainState.class);
-        state = state.navigate(MainState.Page.ID.CALISTHENIC_EXERCISE);
+        state = state.navigate(MainState.Page.Id.CALISTHENIC_WORKOUT);
+        assertGsonEquals(gson, state, MainState.class);
+        state = state.navigate(MainState.Page.Id.CALISTHENIC_FEEDBACK);
         assertGsonEquals(gson, state, MainState.class);
     }
 
@@ -50,7 +47,7 @@ public class ExampleUnitTest {
     public void setCalisthenicExercise() throws Exception {
         MainState state = MainState
                 .init()
-                .navigate(MainState.Page.ID.CALISTHENIC_EXERCISE)
+                .navigate(MainState.Page.Id.CALISTHENIC_WORKOUT)
                 .setCalisthenicExercise(4);
 
         assertEquals(4, state.page().calisthenicPageState().exerciseIndex());
@@ -58,15 +55,38 @@ public class ExampleUnitTest {
 
     @Test
     public void calisthenicExerciseTemplateNext() throws Exception {
+
         CalisthenicExercise.Template original =
                 CalisthenicExercise.Template.create(
-                        Arrays.asList(9,9,9,9,9,9),
+                        CalisthenicExercise.DEFAULT_REPS_TO_SETS_F,
+                        Arrays.asList(14, 14, 15, 15, 15, 15),
                         Arrays.asList("Anything"));
+
         CalisthenicExercise.Template expected =
                 CalisthenicExercise.Template.create(
-                        Arrays.asList(10,10,10,11,11,11),
-                        original.variations()); /* variations doesn't change */
-        assertEquals(original.next().next().next(), expected);
+                        original.repsToSetsF(),
+                        Arrays.asList(18, 18, 18, 19, 19),
+                        original.variations());
+
+        assertEquals(expected, original.next());
+    }
+
+    @Test
+    public void pullUpTemplateNext() throws Exception {
+
+        CalisthenicExercise.Template original =
+                CalisthenicExercise.Template.create(
+                        CalisthenicExercise.PULL_UPS_REPS_TO_SETS_F,
+                        Arrays.asList(6, 6, 6, 6, 6),
+                        Arrays.asList("Anything"));
+
+        CalisthenicExercise.Template expected =
+                CalisthenicExercise.Template.create(
+                        original.repsToSetsF(),
+                        Arrays.asList(8, 8, 8, 8),
+                        original.variations());
+
+        assertEquals(expected, original.next());
     }
 
 }

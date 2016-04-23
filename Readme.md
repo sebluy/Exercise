@@ -1,9 +1,13 @@
 Todo:
 
+Change page.pageState() to page.state()
+
 Implement persistent storage for workout "templates" (find good name, maybe seed).
-- add commit button
-- add to hawk storage
-- modify workout progression semantics
+    - modify workout progression semantics
+        - be careful putting templates in gson/hawk
+    - add commit page - success/failure
+
+    - add to hawk storage
 
 Implement history page
 - show past 2 weeks activity

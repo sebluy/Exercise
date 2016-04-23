@@ -1,16 +1,21 @@
 package sebluy.exercise;
 
-import android.content.Context;
 import android.view.Menu;
 import android.view.View;
+
+import static sebluy.exercise.MainState.Page;
+import static sebluy.exercise.MainState.Page.State.Calisthenic;
+import static sebluy.exercise.MainState.Page.State.CalisthenicFeedback;
 
 public class TopView {
 
     public static View view(MainActivity a, MainState state) {
-        MainState.Page page = state.page();
-        switch (page.ID()) {
-            case CALISTHENIC_EXERCISE:
-                return CalisthenicView.view(a, page.calisthenicPageState());
+        Page page = state.page();
+        switch (page.id()) {
+            case CALISTHENIC_WORKOUT:
+                return CalisthenicView.view(a, (Calisthenic)page.pageState());
+            case CALISTHENIC_FEEDBACK:
+                return CalisthenicFeedbackView.view(a, (CalisthenicFeedback)page.pageState());
             default:
                 return MainView.view(a);
         }
@@ -18,8 +23,13 @@ public class TopView {
 
     public static void updateMenu(MainActivity a, Menu menu, MainState state) {
         menu.clear();
-        if (state.page().ID() == MainState.Page.ID.CALISTHENIC_EXERCISE) {
-            CalisthenicView.updateMenu(a, menu);
+        switch (state.page().id()) {
+            case CALISTHENIC_WORKOUT:
+                CalisthenicView.updateMenu(a, menu);
+                break;
+            case CALISTHENIC_FEEDBACK:
+                CalisthenicFeedbackView.updateMenu(a, menu);
+                break;
         }
     }
 }

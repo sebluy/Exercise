@@ -10,6 +10,11 @@ import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.HawkBuilder;
 import com.orhanobut.hawk.LogLevel;
 
+import static sebluy.exercise.MainState.init;
+import static sebluy.exercise.MainState.Page.Id.CALISTHENIC_WORKOUT;
+import static sebluy.exercise.MainState.Page.Id.CALISTHENIC_FEEDBACK;
+import static sebluy.exercise.MainState.Page.Id.HOME;
+
 public class MainActivity extends AppCompatActivity {
 
     private MainState state;
@@ -28,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
                     .build();
         }
 
-        state = Hawk.get("main-state", MainState.init());
+        state = Hawk.get("main-state", init());
 
         /* intial render in onCreateOptionsMenu because android calls onCreate before
          * onCreateOptionsMenu and we need the menu to render.
@@ -68,10 +73,10 @@ public class MainActivity extends AppCompatActivity {
     public void navigate(String pageName) {
         switch (pageName) {
             case "Calisthenic":
-                state = state.navigate(MainState.Page.ID.CALISTHENIC_EXERCISE);
+                state = state.navigate(CALISTHENIC_WORKOUT);
                 break;
             default:
-                state = state.navigate(MainState.Page.ID.HOME);
+                state = state.navigate(HOME);
                 break;
         }
         render();
@@ -81,8 +86,8 @@ public class MainActivity extends AppCompatActivity {
         state = state.setCalisthenicExercise(position);
     }
 
-    public void commitCalisthenicExercise() {
-        state = state.navigate(MainState.Page.ID.HOME);
+    public void finishCalisthenicWorkout() {
+        state = state.navigate(CALISTHENIC_FEEDBACK);
         render();
     }
 }

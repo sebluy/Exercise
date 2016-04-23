@@ -1,19 +1,23 @@
 package sebluy.exercise;
 
-import android.support.annotation.Nullable;
-
 import com.google.auto.value.AutoValue;
 
 import java.util.List;
+import java.util.Map;
 
 import auto.parcelgson.AutoParcelGson;
+
+import static sebluy.exercise.CalisthenicExercise.Template;
+import static sebluy.exercise.CalisthenicExercise.Type;
+import static sebluy.exercise.CalisthenicExercise.generateWorkout;
+import static sebluy.exercise.CalisthenicExercise.templates;
 
 @AutoParcelGson
 public abstract class MainState {
 
     @AutoValue
     static abstract class Page {
-        enum ID {HOME, CALISTHENIC_EXERCISE}
+        enum Id {HOME, CALISTHENIC_WORKOUT, CALISTHENIC_FEEDBACK}
 
         interface State {
 
@@ -26,11 +30,22 @@ public abstract class MainState {
 
             @AutoParcelGson
             abstract class Calisthenic implements State {
+                public abstract Map<Type, Template> templates();
                 public abstract List<CalisthenicExercise> workout();
                 public abstract int exerciseIndex();
 
-                public static Calisthenic create(List<CalisthenicExercise> w, int i) {
-                    return new AutoParcelGson_MainState_Page_State_Calisthenic(w, i);
+                public static
+                Calisthenic create(Map<Type, Template> t, List<CalisthenicExercise> w, int i) {
+                    return new AutoParcelGson_MainState_Page_State_Calisthenic(t, w, i);
+                }
+            }
+
+            @AutoParcelGson
+            abstract class CalisthenicFeedback implements State {
+                public abstract Map<Type, Template> templates();
+
+                public static CalisthenicFeedback create(Map<Type, Template> t) {
+                    return new AutoParcelGson_MainState_Page_State_CalisthenicFeedback(t);
                 }
             }
 
@@ -40,10 +55,10 @@ public abstract class MainState {
             return (State.Calisthenic)pageState();
         }
 
-        public abstract ID ID();
+        public abstract Id id();
         public abstract State pageState();
 
-        public static Page create(ID id, State state) {
+        public static Page create(Id id, State state) {
             return new AutoValue_MainState_Page(id, state);
         }
     }
@@ -57,31 +72,36 @@ public abstract class MainState {
 
     public static MainState init() {
         return MainState.create(
-                Page.create(Page.ID.HOME, Page.State.Empty.create()),
+                Page.create(Page.Id.HOME, Page.State.Empty.create()),
                 fj.data.List.nil());
     }
 
-    public MainState navigate(Page.ID id) {
+    public MainState navigate(Page.Id id) {
         Page p;
         switch (id) {
-            case CALISTHENIC_EXERCISE:
-                p = Page.create(Page.ID.CALISTHENIC_EXERCISE,
-                        Page.State.Calisthenic.create(CalisthenicExercise.generateWorkout(), 0));
+            case CALISTHENIC_WORKOUT:
+                p = Page.create(Page.Id.CALISTHENIC_WORKOUT,
+                        Page.State.Calisthenic.create(templates, generateWorkout(), 0));
+                break;
+            case CALISTHENIC_FEEDBACK:
+                p = Page.create(Page.Id.CALISTHENIC_FEEDBACK,
+                        Page.State.CalisthenicFeedback.create(templates));
                 break;
             default:
-                p = Page.create(Page.ID.HOME, Page.State.Empty.create());
+                p = Page.create(id, Page.State.Empty.create());
                 break;
         }
         return MainState.create(p, history().cons(page()));
     }
 
     public MainState setCalisthenicExercise(int position) {
-        if (page().ID() == Page.ID.CALISTHENIC_EXERCISE) {
+        if (page().id() == Page.Id.CALISTHENIC_WORKOUT) {
             Page.State.Calisthenic pageState = page().calisthenicPageState();
             return MainState.create(
                     Page.create(
-                            Page.ID.CALISTHENIC_EXERCISE,
-                            Page.State.Calisthenic.create(pageState.workout(), position)),
+                            Page.Id.CALISTHENIC_WORKOUT,
+                            Page.State.Calisthenic.create(
+                                    pageState.templates(), pageState.workout(), position)),
                     history());
         } else {
             return this;

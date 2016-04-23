@@ -2,8 +2,6 @@ package sebluy.exercise;
 
 import android.os.Parcelable;
 
-import com.google.auto.value.AutoValue;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -18,51 +16,77 @@ public abstract class CalisthenicExercise implements Parcelable {
 
     public enum Type {PUSH_UP, PULL_UP, CORE, SQUAT, LUNGE}
 
-    @AutoValue
+    @AutoParcelGson
     abstract static class Template {
+        public abstract RepsToSetsF repsToSetsF();
         public abstract List<Integer> sets();
         public abstract List<String> variations();
 
-        static Template create(List<Integer> s, List<String> v) {
-            return new AutoValue_CalisthenicExercise_Template(s, v);
+        static Template create(RepsToSetsF r, List<Integer> s, List<String> v) {
+            return new AutoParcelGson_CalisthenicExercise_Template(r, s, v);
         }
 
         private List<Integer> nextSets() {
-            List<Integer> next = new ArrayList<>(sets());
 
-            /* figure out how many repetitions to add */
-            int total = 0;
+            /* compute new total reps by taking old total and multiplying by 1.05 */
+            int oldTotal = 0;
             for (int reps : sets()) {
-                total += reps;
-            }
-            long nextTotal = Math.round(total*1.05);
-            long toAdd = nextTotal - total;
-
-            /* add repetitions starting from end, but filling evenly */
-            int lastIndex = sets().size() - 1;
-            int addIndex = lastIndex;
-            int prevReps = sets().get(lastIndex);
-            for (int i = lastIndex - 1; i >= 0; i--) {
-                if (prevReps > sets().get(i)) {
-                    addIndex = i;
-                    break;
-                }
+                oldTotal += reps;
             }
 
-            for (int i = 0; i < toAdd; i++) {
-                next.set(addIndex, sets().get(addIndex) + 1);
-                addIndex = addIndex - 1 % sets().size();
+            /* hopefully nobody is doing over 2 billion reps */
+            int newTotal = (int)Math.round(oldTotal*1.05);
+
+            /* compute number of sets */
+            int sets = repsToSetsF().apply(newTotal);
+
+            int each = newTotal / sets;
+            int remainder = newTotal % sets;
+
+            /* add reps evenly to sets, but add remainder starting from the end */
+            List<Integer> next = new ArrayList<>(sets);
+            for (int i = 0; i < sets; i++) {
+                int reps = sets - i <= remainder ? each + 1 : each;
+                next.add(i, reps);
             }
 
             return Collections.unmodifiableList(next);
         }
 
         public Template next() {
-            return create(nextSets(), variations());
+            return create(repsToSetsF(), nextSets(), variations());
+        }
+
+        /* Provides a function which when called with the total number of reps, returns the number
+         * of sets those reps should be performed in.
+         */
+        public interface RepsToSetsF {
+            int apply(int totalReps);
         }
     }
 
+    public static final Template.RepsToSetsF DEFAULT_REPS_TO_SETS_F = totalReps -> {
+        if (totalReps <= 90) {
+            return 6;
+        } else if (totalReps <= 125) {
+            return 5;
+        } else {
+            return 4;
+        }
+    };
+
+    public static final Template.RepsToSetsF PULL_UPS_REPS_TO_SETS_F = totalReps -> {
+        if (totalReps <= 18) {
+            return 6;
+        } else if (totalReps <= 30) {
+            return 5;
+        } else {
+            return 4;
+        }
+    };
+
     private static final Template pushUp = Template.create(
+            DEFAULT_REPS_TO_SETS_F,
             Collections.unmodifiableList(Arrays.asList(9, 9, 9, 9, 9, 9)),
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Push-up",
@@ -72,9 +96,10 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "T Push-up",
                     "Pike Push-Up",
                     "Dive Bomber Push-Up"
-    )));
+            )));
 
     private static final Template pullUp = Template.create(
+            PULL_UPS_REPS_TO_SETS_F,
             Collections.unmodifiableList(Arrays.asList(8, 8, 8, 8)),
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Pull-Up",
@@ -86,6 +111,7 @@ public abstract class CalisthenicExercise implements Parcelable {
     )));
 
     private static final Template core = Template.create(
+            DEFAULT_REPS_TO_SETS_F,
             Collections.unmodifiableList(Arrays.asList(20, 20, 20, 20, 20)),
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Crunch",
@@ -97,6 +123,7 @@ public abstract class CalisthenicExercise implements Parcelable {
     )));
 
     private static final Template squat = Template.create(
+            DEFAULT_REPS_TO_SETS_F,
             Collections.unmodifiableList(Arrays.asList(18, 18, 18, 18, 18)),
             Collections.unmodifiableList(Arrays.asList(
                     "Squat",
@@ -106,6 +133,7 @@ public abstract class CalisthenicExercise implements Parcelable {
     )));
 
     private static final Template lunge = Template.create(
+            DEFAULT_REPS_TO_SETS_F,
             Collections.unmodifiableList(Arrays.asList(20, 20, 20, 20, 20)),
             Collections.unmodifiableList(Arrays.asList(
                     "Forward Lunge",
@@ -163,11 +191,13 @@ public abstract class CalisthenicExercise implements Parcelable {
     * until all sub-lists are empty.
     */
     public static <E> List<E> interleave(List<List<E>> ll) {
-        List<E> result = new ArrayList<>();
         int maxSize = 0;
+        int totalSize = 0;
         for (List<E> l : ll) {
             maxSize = maxSize > l.size() ? maxSize : l.size();
+            totalSize += l.size();
         }
+        List<E> result = new ArrayList<>(totalSize);
         for (int j = 0; j < maxSize; j++) {
             for (int i = 0; i < ll.size(); i++) {
                 List<E> l = ll.get(i);

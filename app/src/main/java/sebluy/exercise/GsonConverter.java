@@ -8,6 +8,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
@@ -18,6 +19,13 @@ import java.util.Collections;
 import java.util.List;
 
 import auto.parcelgson.gson.AutoParcelGsonTypeAdapterFactory;
+
+import static sebluy.exercise.CalisthenicExercise.PULL_UPS_REPS_TO_SETS_F;
+import static sebluy.exercise.CalisthenicExercise.DEFAULT_REPS_TO_SETS_F;
+import static sebluy.exercise.CalisthenicExercise.Template.RepsToSetsF;
+import static sebluy.exercise.MainState.Page;
+import static sebluy.exercise.MainState.Page.State;
+import static sebluy.exercise.MainState.Page.Id;
 
 public class GsonConverter {
 
@@ -76,18 +84,18 @@ public class GsonConverter {
     }
 
     public static class PageGsonAdapter implements
-            JsonSerializer<MainState.Page>,
-            JsonDeserializer<MainState.Page> {
+            JsonSerializer<Page>,
+            JsonDeserializer<Page> {
 
         @Override
         public JsonElement
-        serialize(MainState.Page src, Type typeOfSrc, JsonSerializationContext context) {
+        serialize(Page src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject obj = new JsonObject();
-            obj.add("ID", context.serialize(src.ID()));
-            switch (src.ID()) {
-                case CALISTHENIC_EXERCISE:
+            obj.add("id", context.serialize(src.id()));
+            switch (src.id()) {
+                case CALISTHENIC_WORKOUT:
                     obj.add("pageState",
-                            context.serialize(src.pageState(), MainState.Page.State.Calisthenic.class));
+                            context.serialize(src.pageState(), Page.State.Calisthenic.class));
                     break;
                 default:
                     obj.add("pageState", context.serialize(src.pageState()));
@@ -96,22 +104,50 @@ public class GsonConverter {
         }
 
         @Override
-        public MainState.Page
+        public Page
         deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
             JsonObject obj = json.getAsJsonObject();
-            MainState.Page.ID id = context.deserialize(obj.get("ID"), MainState.Page.ID.class);
-            MainState.Page.State pageState;
+            Id id = context.deserialize(obj.get("id"), Page.Id.class);
+            State pageState;
             switch (id) {
-                case CALISTHENIC_EXERCISE:
+                case CALISTHENIC_WORKOUT:
                     pageState = context.deserialize(obj.get("pageState"),
-                            MainState.Page.State.Calisthenic.class);
+                            Page.State.Calisthenic.class);
                     break;
                 default:
-                    pageState = MainState.Page.State.Empty.create();
+                    pageState = Page.State.Empty.create();
                     break;
             }
-            return MainState.Page.create(id, pageState);
+            return Page.create(id, pageState);
+        }
+    }
+
+    public static class RepsToSetsFGsonAdapter implements
+            JsonSerializer<RepsToSetsF>,
+            JsonDeserializer<RepsToSetsF> {
+
+        @Override
+        public JsonElement
+        serialize(RepsToSetsF src, Type typeOfSrc, JsonSerializationContext context) {
+            if (src == PULL_UPS_REPS_TO_SETS_F) {
+                return new JsonPrimitive("pull-ups");
+            } else {
+                return new JsonPrimitive("default");
+            }
+        }
+
+        @Override
+        public RepsToSetsF
+        deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
+                throws JsonParseException {
+            String name = json.getAsString();
+            switch (name) {
+                case "pull-ups":
+                    return PULL_UPS_REPS_TO_SETS_F;
+                default:
+                    return DEFAULT_REPS_TO_SETS_F;
+            }
         }
     }
 
@@ -119,7 +155,8 @@ public class GsonConverter {
         GsonBuilder builder = new GsonBuilder();
         builder.registerTypeHierarchyAdapter(fj.data.List.class, new FjListGsonAdapter());
         builder.registerTypeHierarchyAdapter(List.class, new ListGsonAdapter());
-        builder.registerTypeAdapter(MainState.Page.class, new PageGsonAdapter());
+        builder.registerTypeHierarchyAdapter(RepsToSetsF.class, new RepsToSetsFGsonAdapter());
+        builder.registerTypeAdapter(Page.class, new PageGsonAdapter());
         builder.registerTypeAdapterFactory(new AutoParcelGsonTypeAdapterFactory());
         return builder.create();
     }

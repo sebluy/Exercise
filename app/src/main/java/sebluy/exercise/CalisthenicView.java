@@ -85,10 +85,10 @@ public class CalisthenicView {
     }
 
     public static void updateMenu(MainActivity a, Menu menu) {
-        menu.add("Commit")
+        menu.add("Finish")
                 .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                 .setOnMenuItemClickListener(item -> {
-                    a.commitCalisthenicExercise();
+                    a.finishCalisthenicWorkout();
                     return true;
                 });
     }
