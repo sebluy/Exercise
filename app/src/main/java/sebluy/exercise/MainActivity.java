@@ -32,6 +32,9 @@ public class MainActivity extends AppCompatActivity {
                     .build();
         }
 
+        /* for bad states in development */
+//        Hawk.remove("main-state");
+
         state = Hawk.get("main-state", init());
 
         /* intial render in onCreateOptionsMenu because android calls onCreate before

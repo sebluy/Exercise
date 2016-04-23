@@ -25,6 +25,9 @@ import static sebluy.exercise.CalisthenicExercise.DEFAULT_REPS_TO_SETS_F;
 import static sebluy.exercise.CalisthenicExercise.Template.RepsToSetsF;
 import static sebluy.exercise.MainState.Page;
 import static sebluy.exercise.MainState.Page.State;
+import static sebluy.exercise.MainState.Page.State.CalisthenicFeedback;
+import static sebluy.exercise.MainState.Page.State.CalisthenicWorkout;
+import static sebluy.exercise.MainState.Page.State.Empty;
 import static sebluy.exercise.MainState.Page.Id;
 
 public class GsonConverter {
@@ -92,14 +95,19 @@ public class GsonConverter {
         serialize(Page src, Type typeOfSrc, JsonSerializationContext context) {
             JsonObject obj = new JsonObject();
             obj.add("id", context.serialize(src.id()));
+            JsonElement state;
             switch (src.id()) {
                 case CALISTHENIC_WORKOUT:
-                    obj.add("state",
-                            context.serialize(src.state(), State.CalisthenicWorkout.class));
+                    state = context.serialize(src.state(), CalisthenicWorkout.class);
+                    break;
+                case CALISTHENIC_FEEDBACK:
+                    state = context.serialize(src.state(), CalisthenicFeedback.class);
                     break;
                 default:
-                    obj.add("state", context.serialize(src.state()));
+                    state = context.serialize(src.state());
+                    break;
             }
+            obj.add("state", state);
             return obj;
         }
 
@@ -109,17 +117,19 @@ public class GsonConverter {
                 throws JsonParseException {
             JsonObject obj = json.getAsJsonObject();
             Id id = context.deserialize(obj.get("id"), Page.Id.class);
-            State pageState;
+            State state;
             switch (id) {
                 case CALISTHENIC_WORKOUT:
-                    pageState = context.deserialize(obj.get("state"),
-                            State.CalisthenicWorkout.class);
+                    state = context.deserialize(obj.get("state"), CalisthenicWorkout.class);
+                    break;
+                case CALISTHENIC_FEEDBACK:
+                    state = context.deserialize(obj.get("state"), CalisthenicFeedback.class);
                     break;
                 default:
-                    pageState = Page.State.Empty.create();
+                    state = Empty.create();
                     break;
             }
-            return Page.create(id, pageState);
+            return Page.create(id, state);
         }
     }
 

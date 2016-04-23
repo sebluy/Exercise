@@ -8,6 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static sebluy.exercise.MainState.Page.Id;
+import static sebluy.exercise.MainState.Page.State.Empty;
+import static sebluy.exercise.MainState.Page.State.CalisthenicFeedback;
+import static sebluy.exercise.MainState.Page.State.CalisthenicWorkout;
 
 public class ExampleUnitTest {
 
@@ -28,27 +33,34 @@ public class ExampleUnitTest {
                 Arrays.asList(1,4,6,2,5,7,3,8));
     }
 
-    public void assertGsonEquals(Gson gson, Object o, Class<?> c) throws Exception {
-        assertEquals(gson.fromJson(gson.toJson(o), c), o);
+    public <T> T gsonThereAndBack(Gson gson, Object o, Class<T> c) {
+        return gson.fromJson(gson.toJson(o), c);
     }
 
     @Test
     public void mainStateGson() throws Exception {
         Gson gson = GsonConverter.buildGson();
+
         MainState state = MainState.init();
-        assertGsonEquals(gson, state, MainState.class);
-        state = state.navigate(MainState.Page.Id.CALISTHENIC_WORKOUT);
-        assertGsonEquals(gson, state, MainState.class);
-        state = state.navigate(MainState.Page.Id.CALISTHENIC_FEEDBACK);
-        assertGsonEquals(gson, state, MainState.class);
+        MainState gsonState = gsonThereAndBack(gson, state, MainState.class);
+        assertTrue(state.page().state() instanceof Empty);
+        assertEquals(state, gsonState);
+
+        state = state.navigate(Id.CALISTHENIC_WORKOUT);
+        gsonState = gsonThereAndBack(gson, state, MainState.class);
+        assertTrue(state.page().state() instanceof CalisthenicWorkout);
+        assertEquals(state, gsonState);
+
+        state = state.navigate(Id.CALISTHENIC_FEEDBACK);
+        gsonState = gsonThereAndBack(gson, state, MainState.class);
+        assertTrue(state.page().state() instanceof CalisthenicFeedback);
+        assertEquals(state, gsonState);
     }
 
     @Test
     public void setCalisthenicExercise() throws Exception {
-        MainState state = MainState
-                .init()
-                .navigate(MainState.Page.Id.CALISTHENIC_WORKOUT)
-                .setCalisthenicExercise(4);
+        MainState state =
+                MainState.init().navigate(Id.CALISTHENIC_WORKOUT).setCalisthenicExercise(4);
 
         assertEquals(4, state.page().calisthenicPageState().exerciseIndex());
     }

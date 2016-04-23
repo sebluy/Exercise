@@ -1,12 +1,18 @@
 package sebluy.exercise;
 
+import android.os.Build;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckedTextView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,8 +35,11 @@ public class CalisthenicFeedbackView {
             typeNames.add(t.toString());
         }
 
-//        list.setOnItemClickListener((parent, v, pos, id) -> a.navigate(workoutNames.get(pos)));
-        list.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_list_item_1, typeNames));
+        list.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_list_item_checked, typeNames));
+        list.setOnItemClickListener((parent, v, pos, id) -> {
+            CheckedTextView t = (CheckedTextView)v;
+            t.setChecked(!t.isChecked());
+        });
 
         return list;
 
