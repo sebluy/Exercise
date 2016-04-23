@@ -6,20 +6,20 @@ import android.view.View;
 
 public class TopView {
 
-    public static View view(MainActivity activity, MainState state) {
+    public static View view(MainActivity a, MainState state) {
         MainState.Page page = state.page();
         switch (page.ID()) {
             case CALISTHENIC_EXERCISE:
-                return CalisthenicView.view(activity, page.calisthenicPageState());
+                return CalisthenicView.view(a, page.calisthenicPageState());
             default:
-                return MainView.view(activity);
+                return MainView.view(a);
         }
     }
 
-    public static void updateMenu(Menu menu, MainState state) {
+    public static void updateMenu(MainActivity a, Menu menu, MainState state) {
         menu.clear();
         if (state.page().ID() == MainState.Page.ID.CALISTHENIC_EXERCISE) {
-            CalisthenicView.updateMenu(menu);
+            CalisthenicView.updateMenu(a, menu);
         }
     }
 }

@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -83,8 +84,13 @@ public class CalisthenicView {
         return pager;
     }
 
-    public static void updateMenu(Menu menu) {
-        menu.add("Commit").setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+    public static void updateMenu(MainActivity a, Menu menu) {
+        menu.add("Commit")
+                .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
+                .setOnMenuItemClickListener(item -> {
+                    a.commitCalisthenicExercise();
+                    return true;
+                });
     }
 
 }

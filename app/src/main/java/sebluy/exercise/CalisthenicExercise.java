@@ -20,16 +20,16 @@ public abstract class CalisthenicExercise implements Parcelable {
 
     @AutoValue
     abstract static class Template {
-        public abstract int repetitions();
-        public abstract int sets();
+        public abstract List<Integer> sets();
         public abstract List<String> variations();
 
-        static Template create(int r, int s, List<String> v) {
-            return new AutoValue_CalisthenicExercise_Template(r, s, v);
+        static Template create(List<Integer> s, List<String> v) {
+            return new AutoValue_CalisthenicExercise_Template(s, v);
         }
     }
 
-    private static final Template pushUp = Template.create(9, 6,
+    private static final Template pushUp = Template.create(
+            Collections.unmodifiableList(Arrays.asList(9, 9, 9, 9, 9, 9)),
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Push-up",
                     "Knuckle Push-up",
@@ -40,7 +40,8 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Dive Bomber Push-Up"
     )));
 
-    private static final Template pullUp = Template.create(8, 4,
+    private static final Template pullUp = Template.create(
+            Collections.unmodifiableList(Arrays.asList(8, 8, 8, 8)),
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Pull-Up",
                     "Narrow Pull-Up",
@@ -50,7 +51,8 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Narrow Chin-Up"
     )));
 
-    private static final Template core = Template.create(20, 5,
+    private static final Template core = Template.create(
+            Collections.unmodifiableList(Arrays.asList(20, 20, 20, 20, 20)),
             Collections.unmodifiableList(Arrays.asList(
                     "Normal Crunch",
                     "Reverse Crunch",
@@ -60,7 +62,8 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Flutter Kick"
     )));
 
-    private static final Template squat = Template.create(18, 5,
+    private static final Template squat = Template.create(
+            Collections.unmodifiableList(Arrays.asList(18, 18, 18, 18, 18)),
             Collections.unmodifiableList(Arrays.asList(
                     "Squat",
                     "Vertical Jump",
@@ -68,7 +71,8 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Lateral Jump"
     )));
 
-    private static final Template lunge = Template.create(20, 5,
+    private static final Template lunge = Template.create(
+            Collections.unmodifiableList(Arrays.asList(20, 20, 20, 20, 20)),
             Collections.unmodifiableList(Arrays.asList(
                     "Forward Lunge",
                     "Backward Lunge",
@@ -145,11 +149,11 @@ public abstract class CalisthenicExercise implements Parcelable {
         Template template = templates.get(type);
         List<CalisthenicExercise> exercises = new ArrayList<>();
         VariationStream variations = randomVariations(template.variations());
-        int sets = template.sets();
-        for (int set = 1; set <= sets; set++) {
+        List<Integer> sets = template.sets();
+        int setCount = sets.size();
+        for (int set = 1; set <= setCount; set++) {
             String variation = variations.next();
-            int extraReps = (set == sets ? sets : 0);
-            int reps = template.repetitions() + extraReps;
+            int reps = sets.get(set - 1); /* zero-indexed */
             exercises.add(CalisthenicExercise.create(type, reps, set, variation));
         }
         return Collections.unmodifiableList(exercises);

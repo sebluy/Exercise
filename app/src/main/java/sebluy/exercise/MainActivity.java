@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void render() {
         setContentView(TopView.view(this, state));
-        TopView.updateMenu(menu, state);
+        TopView.updateMenu(this, menu, state);
     }
 
     public void navigate(String pageName) {
@@ -79,5 +79,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void setCalisthenicExercise(int position) {
         state = state.setCalisthenicExercise(position);
+    }
+
+    public void commitCalisthenicExercise() {
+        state = state.navigate(MainState.Page.ID.HOME);
+        render();
     }
 }
