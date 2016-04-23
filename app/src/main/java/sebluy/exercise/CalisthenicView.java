@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -58,7 +57,7 @@ public class CalisthenicView {
         }
     }
 
-    public static View view(MainActivity a, MainState.Page.State.Calisthenic state) {
+    public static View view(MainActivity a, MainState.Page.State.CalisthenicWorkout state) {
         List<CalisthenicExercise> workout = state.workout();
         FragmentPagerAdapter adapter = new FragmentPagerAdapter(a.getSupportFragmentManager()) {
             @Override

@@ -11,9 +11,8 @@ import com.orhanobut.hawk.HawkBuilder;
 import com.orhanobut.hawk.LogLevel;
 
 import static sebluy.exercise.MainState.init;
-import static sebluy.exercise.MainState.Page.Id.CALISTHENIC_WORKOUT;
+import static sebluy.exercise.MainState.Page.Id;
 import static sebluy.exercise.MainState.Page.Id.CALISTHENIC_FEEDBACK;
-import static sebluy.exercise.MainState.Page.Id.HOME;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -70,15 +69,8 @@ public class MainActivity extends AppCompatActivity {
         TopView.updateMenu(this, menu, state);
     }
 
-    public void navigate(String pageName) {
-        switch (pageName) {
-            case "Calisthenic":
-                state = state.navigate(CALISTHENIC_WORKOUT);
-                break;
-            default:
-                state = state.navigate(HOME);
-                break;
-        }
+    public void navigate(Id id) {
+        state = state.navigate(id);
         render();
     }
 
@@ -87,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void finishCalisthenicWorkout() {
-        state = state.navigate(CALISTHENIC_FEEDBACK);
-        render();
+        navigate(CALISTHENIC_FEEDBACK);
     }
 }

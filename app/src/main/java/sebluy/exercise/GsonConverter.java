@@ -94,11 +94,11 @@ public class GsonConverter {
             obj.add("id", context.serialize(src.id()));
             switch (src.id()) {
                 case CALISTHENIC_WORKOUT:
-                    obj.add("pageState",
-                            context.serialize(src.pageState(), Page.State.Calisthenic.class));
+                    obj.add("state",
+                            context.serialize(src.state(), State.CalisthenicWorkout.class));
                     break;
                 default:
-                    obj.add("pageState", context.serialize(src.pageState()));
+                    obj.add("state", context.serialize(src.state()));
             }
             return obj;
         }
@@ -112,8 +112,8 @@ public class GsonConverter {
             State pageState;
             switch (id) {
                 case CALISTHENIC_WORKOUT:
-                    pageState = context.deserialize(obj.get("pageState"),
-                            Page.State.Calisthenic.class);
+                    pageState = context.deserialize(obj.get("state"),
+                            State.CalisthenicWorkout.class);
                     break;
                 default:
                     pageState = Page.State.Empty.create();

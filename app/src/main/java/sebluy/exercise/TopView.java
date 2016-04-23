@@ -4,7 +4,7 @@ import android.view.Menu;
 import android.view.View;
 
 import static sebluy.exercise.MainState.Page;
-import static sebluy.exercise.MainState.Page.State.Calisthenic;
+import static sebluy.exercise.MainState.Page.State.CalisthenicWorkout;
 import static sebluy.exercise.MainState.Page.State.CalisthenicFeedback;
 
 public class TopView {
@@ -13,9 +13,9 @@ public class TopView {
         Page page = state.page();
         switch (page.id()) {
             case CALISTHENIC_WORKOUT:
-                return CalisthenicView.view(a, (Calisthenic)page.pageState());
+                return CalisthenicView.view(a, (CalisthenicWorkout)page.state());
             case CALISTHENIC_FEEDBACK:
-                return CalisthenicFeedbackView.view(a, (CalisthenicFeedback)page.pageState());
+                return CalisthenicFeedbackView.view(a, (CalisthenicFeedback)page.state());
             default:
                 return MainView.view(a);
         }
