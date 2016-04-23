@@ -26,6 +26,40 @@ public abstract class CalisthenicExercise implements Parcelable {
         static Template create(List<Integer> s, List<String> v) {
             return new AutoValue_CalisthenicExercise_Template(s, v);
         }
+
+        private List<Integer> nextSets() {
+            List<Integer> next = new ArrayList<>(sets());
+
+            /* figure out how many repetitions to add */
+            int total = 0;
+            for (int reps : sets()) {
+                total += reps;
+            }
+            long nextTotal = Math.round(total*1.05);
+            long toAdd = nextTotal - total;
+
+            /* add repetitions starting from end, but filling evenly */
+            int lastIndex = sets().size() - 1;
+            int addIndex = lastIndex;
+            int prevReps = sets().get(lastIndex);
+            for (int i = lastIndex - 1; i >= 0; i--) {
+                if (prevReps > sets().get(i)) {
+                    addIndex = i;
+                    break;
+                }
+            }
+
+            for (int i = 0; i < toAdd; i++) {
+                next.set(addIndex, sets().get(addIndex) + 1);
+                addIndex = addIndex - 1 % sets().size();
+            }
+
+            return Collections.unmodifiableList(next);
+        }
+
+        public Template next() {
+            return create(nextSets(), variations());
+        }
     }
 
     private static final Template pushUp = Template.create(
@@ -79,7 +113,7 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Side Lunge"
     )));
 
-    private static final Map<Type, Template> templates;
+    public static final Map<Type, Template> templates;
     static {
         Map<Type, Template> t = new HashMap<>();
         t.put(Type.PUSH_UP, pushUp);

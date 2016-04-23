@@ -44,8 +44,6 @@ public class ExampleUnitTest {
         assertGsonEquals(gson, state, MainState.class);
         state = state.navigate(MainState.Page.ID.CALISTHENIC_EXERCISE);
         assertGsonEquals(gson, state, MainState.class);
-        state = gson.fromJson(gson.toJson(state), MainState.class);
-        List<CalisthenicExercise> w = ((MainState.Page.State.Calisthenic)state.page().pageState()).workout();
     }
 
     @Test
@@ -55,7 +53,20 @@ public class ExampleUnitTest {
                 .navigate(MainState.Page.ID.CALISTHENIC_EXERCISE)
                 .setCalisthenicExercise(4);
 
-        assertEquals(state.page().calisthenicPageState().exerciseIndex(), 4);
+        assertEquals(4, state.page().calisthenicPageState().exerciseIndex());
+    }
+
+    @Test
+    public void calisthenicExerciseTemplateNext() throws Exception {
+        CalisthenicExercise.Template original =
+                CalisthenicExercise.Template.create(
+                        Arrays.asList(9,9,9,9,9,9),
+                        Arrays.asList("Anything"));
+        CalisthenicExercise.Template expected =
+                CalisthenicExercise.Template.create(
+                        Arrays.asList(10,10,10,11,11,11),
+                        original.variations()); /* variations doesn't change */
+        assertEquals(original.next().next().next(), expected);
     }
 
 }
