@@ -32,7 +32,7 @@ public class CalisthenicFeedbackView {
                 state.templates();
 
         List<String> typeNames = new ArrayList<>(templates.size());
-        for (Type t : CalisthenicExercise.order) {
+        for (Type t : CalisthenicExercise.ORDER) {
             typeNames.add(CalisthenicExercise.names.get(t));
         }
 
@@ -76,7 +76,7 @@ public class CalisthenicFeedbackView {
         menu.add("Commit")
                 .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM)
                 .setOnMenuItemClickListener(item -> {
-//                    a.finishCalisthenicWorkout();
+                    a.commitCalisthenicWorkout();
                     return true;
                 });
     }

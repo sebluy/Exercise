@@ -32,15 +32,15 @@ import static sebluy.exercise.MainState.Page.Id;
 
 public class GsonConverter {
 
-    public static class FjListGsonAdapter implements
-            JsonSerializer<fj.data.List<?>>,
-            JsonDeserializer<fj.data.List<?>> {
+    public static class FjListGsonAdapter<E> implements
+            JsonSerializer<fj.data.List<E>>,
+            JsonDeserializer<fj.data.List<E>> {
 
         @Override
-        public fj.data.List<?>
+        public fj.data.List<E>
         deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
-            List l = new ArrayList<>();
+            List<E> l = new ArrayList<>();
             Type elemType = ((ParameterizedType)typeOfT).getActualTypeArguments()[0];
             for (JsonElement e : json.getAsJsonArray()) {
                 l.add(context.deserialize(e, elemType));
@@ -50,25 +50,25 @@ public class GsonConverter {
 
         @Override
         public JsonElement
-        serialize(fj.data.List<?> src, Type typeOfSrc, JsonSerializationContext context) {
+        serialize(fj.data.List<E> src, Type typeOfSrc, JsonSerializationContext context) {
             JsonArray json = new JsonArray();
-            for (Object e : src) {
+            for (E e : src) {
                 json.add(context.serialize(e));
             }
             return json;
         }
     }
 
-    public static class ListGsonAdapter implements
-            JsonSerializer<List<?>>,
-            JsonDeserializer<List<?>> {
+    public static class ListGsonAdapter<E> implements
+            JsonSerializer<List<E>>,
+            JsonDeserializer<List<E>> {
 
         @Override
-        public List<?>
+        public List<E>
         deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
                 throws JsonParseException {
             Type elemType = ((ParameterizedType)typeOfT).getActualTypeArguments()[0];
-            List l = new ArrayList<>();
+            List<E> l = new ArrayList<>();
             for (JsonElement e : json.getAsJsonArray()) {
                 l.add(context.deserialize(e, elemType));
             }
@@ -77,9 +77,9 @@ public class GsonConverter {
 
         @Override
         public JsonElement
-        serialize(List<?> src, Type typeOfSrc, JsonSerializationContext context) {
+        serialize(List<E> src, Type typeOfSrc, JsonSerializationContext context) {
             JsonArray array = new JsonArray();
-            for (Object e : src) {
+            for (E e : src) {
                 array.add(context.serialize(e));
             }
             return array;

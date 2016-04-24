@@ -12,15 +12,14 @@ import auto.parcelgson.AutoParcelGson;
 import static sebluy.exercise.CalisthenicExercise.Template;
 import static sebluy.exercise.CalisthenicExercise.Type;
 import static sebluy.exercise.CalisthenicExercise.generateWorkout;
-import static sebluy.exercise.CalisthenicExercise.names;
-import static sebluy.exercise.CalisthenicExercise.templates;
+import static sebluy.exercise.CalisthenicExercise.TEMPLATES;
 import static sebluy.exercise.MainState.Page.Id;
-import static sebluy.exercise.MainState.Page.Id.HOME;
 import static sebluy.exercise.MainState.Page.Id.CALISTHENIC_FEEDBACK;
 import static sebluy.exercise.MainState.Page.Id.CALISTHENIC_WORKOUT;
-import static sebluy.exercise.MainState.Page.State.Empty;
-import static sebluy.exercise.MainState.Page.State.CalisthenicWorkout;
+import static sebluy.exercise.MainState.Page.Id.HOME;
 import static sebluy.exercise.MainState.Page.State.CalisthenicFeedback;
+import static sebluy.exercise.MainState.Page.State.CalisthenicWorkout;
+import static sebluy.exercise.MainState.Page.State.Empty;
 
 @AutoParcelGson
 public abstract class MainState {
@@ -47,6 +46,10 @@ public abstract class MainState {
                 public static CalisthenicWorkout
                 create(Map<Type, Template> t, List<CalisthenicExercise> w, int i) {
                     return new AutoParcelGson_MainState_Page_State_CalisthenicWorkout(t, w, i);
+                }
+
+                public static CalisthenicWorkout init(Map<Type, Template> templates) {
+                    return create(templates, generateWorkout(templates), 0);
                 }
             }
 
@@ -98,17 +101,19 @@ public abstract class MainState {
     public MainState navigate(Id id) {
         Page p;
         switch (id) {
-            case CALISTHENIC_WORKOUT:
-                p = Page.create(CALISTHENIC_WORKOUT,
-                        CalisthenicWorkout.create(templates, generateWorkout(), 0));
-                break;
             case CALISTHENIC_FEEDBACK:
-                p = Page.create(CALISTHENIC_FEEDBACK, CalisthenicFeedback.init(templates));
+                Map<Type, Template> templates = ((CalisthenicWorkout)page().state()).templates();
+                p = Page.create(id, CalisthenicFeedback.init(templates));
                 break;
             default:
                 p = Page.create(id, Empty.create());
                 break;
         }
+        return MainState.create(p, history().cons(page()));
+    }
+
+    public MainState navigateCalisthenicWorkout(Map<Type, Template> templates) {
+        Page p = Page.create(CALISTHENIC_WORKOUT, CalisthenicWorkout.init(templates));
         return MainState.create(p, history().cons(page()));
     }
 
@@ -138,7 +143,6 @@ public abstract class MainState {
                                 Collections.unmodifiableList(newResults))),
                 history());
     }
-
 
     public MainState back() {
         return MainState.create(history().head(), history().tail());

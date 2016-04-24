@@ -152,7 +152,7 @@ public abstract class CalisthenicExercise implements Parcelable {
         names = Collections.unmodifiableMap(t);
     }
 
-    public static final Map<Type, Template> templates;
+    public static final Map<Type, Template> TEMPLATES;
     static {
         Map<Type, Template> t = new HashMap<>();
         t.put(Type.PUSH_UP, pushUp);
@@ -160,10 +160,10 @@ public abstract class CalisthenicExercise implements Parcelable {
         t.put(Type.CORE, core);
         t.put(Type.SQUAT, squat);
         t.put(Type.LUNGE, lunge);
-        templates = Collections.unmodifiableMap(t);
+        TEMPLATES = Collections.unmodifiableMap(t);
     }
 
-    public static final List<Type> order =
+    public static final List<Type> ORDER =
             Collections.unmodifiableList(
                     Arrays.asList(Type.PUSH_UP, Type.SQUAT, Type.CORE, Type.PULL_UP, Type.LUNGE));
 
@@ -189,7 +189,7 @@ public abstract class CalisthenicExercise implements Parcelable {
     }
 
     /* Returns an infinite stream of random variations.
-    * The variations are shuffled into a random order and then repeated
+    * The variations are shuffled into a random ORDER and then repeated
     * infinitely.
     */
     private static VariationStream randomVariations(List<String> variations) {
@@ -198,7 +198,7 @@ public abstract class CalisthenicExercise implements Parcelable {
         return new VariationStream(l);
     }
 
-    /* Returns a list formed by taking a single element in order from each sub-list
+    /* Returns a list formed by taking a single element in ORDER from each sub-list
     * until all sub-lists are empty.
     */
     public static <E> List<E> interleave(List<List<E>> ll) {
@@ -220,8 +220,7 @@ public abstract class CalisthenicExercise implements Parcelable {
         return Collections.unmodifiableList(result);
     }
 
-    public static List<CalisthenicExercise> buildExercises(Type type) {
-        Template template = templates.get(type);
+    public static List<CalisthenicExercise> buildExercises(Type type, Template template) {
         List<CalisthenicExercise> exercises = new ArrayList<>();
         VariationStream variations = randomVariations(template.variations());
         List<Integer> sets = template.sets();
@@ -234,12 +233,25 @@ public abstract class CalisthenicExercise implements Parcelable {
         return Collections.unmodifiableList(exercises);
     }
 
-    public static List<CalisthenicExercise> generateWorkout() {
+    public static List<CalisthenicExercise> generateWorkout(Map<Type, Template> templates) {
         List<List<CalisthenicExercise>> ll = new ArrayList<>();
-        for (Type t : order) {
-            ll.add(buildExercises(t));
+        for (Type type : ORDER) {
+            Template template = templates.get(type);
+            ll.add(buildExercises(type, template));
         }
         return interleave(ll);
+    }
+
+    public static Map<Type, Template>
+    nextTemplates(Map<Type, Template> templates, List<Boolean> results) {
+        Map<Type, Template> nextTemplates = new HashMap<>(templates.size());
+        for (int i = 0; i < ORDER.size(); i++) {
+            Type type = ORDER.get(i);
+            Template last = templates.get(type);
+            Template next = results.get(i) ? last.next() : last;
+            nextTemplates.put(type, next);
+        }
+        return Collections.unmodifiableMap(nextTemplates);
     }
 
     public abstract Type type();

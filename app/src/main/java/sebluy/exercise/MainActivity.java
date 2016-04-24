@@ -3,21 +3,29 @@ package sebluy.exercise;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
-import android.view.MenuItem;
 
 import com.orhanobut.hawk.GsonParser;
 import com.orhanobut.hawk.Hawk;
 import com.orhanobut.hawk.HawkBuilder;
 import com.orhanobut.hawk.LogLevel;
 
-import static sebluy.exercise.MainState.init;
+import java.util.Map;
+
+import sebluy.exercise.CalisthenicExercise.Template;
+import sebluy.exercise.CalisthenicExercise.Type;
+import sebluy.exercise.MainState.Page.State.CalisthenicFeedback;
+
 import static sebluy.exercise.MainState.Page.Id;
 import static sebluy.exercise.MainState.Page.Id.CALISTHENIC_FEEDBACK;
+import static sebluy.exercise.MainState.init;
 
 public class MainActivity extends AppCompatActivity {
 
     private MainState state;
     private Menu menu;
+
+    private final String HAWK_MAIN_STATE = "main-state";
+    private final String HAWK_CALISTHENIC = "calisthenic";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         /* for bad states in development */
-//        Hawk.remove("main-state");
+        Hawk.remove("main-state");
 
-        state = Hawk.get("main-state", init());
+        state = Hawk.get(HAWK_MAIN_STATE, init());
 
         /* intial render in onCreateOptionsMenu because android calls onCreate before
          * onCreateOptionsMenu and we need the menu to render.
@@ -45,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu m) {
         super.onCreateOptionsMenu(m) ;
-        m.add("Commit").setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
+//        m.add("Commit").setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_IF_ROOM);
         menu = m;
         render();
         return true;
@@ -73,7 +81,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void navigate(Id id) {
-        state = state.navigate(id);
+        switch (id) {
+            case CALISTHENIC_WORKOUT:
+                Map<Type, Template> templates =
+                        Hawk.get("calisthenic", CalisthenicExercise.TEMPLATES);
+                state = state.navigateCalisthenicWorkout(templates);
+                break;
+            default:
+                state = state.navigate(id);
+                break;
+        }
         render();
     }
 
@@ -87,5 +104,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void setCalisthenicFeedback(int pos, boolean b) {
         state = state.setCalisthenicFeedback(pos, b);
+    }
+
+    public void commitCalisthenicWorkout() {
+        CalisthenicFeedback feedback = (CalisthenicFeedback)state.page().state();
+        Map<Type, Template> next =
+                CalisthenicExercise.nextTemplates(feedback.templates(), feedback.results());
+        Hawk.put(HAWK_CALISTHENIC, next);
+        state = state.back().back(); /* find a better way */
+        render();
     }
 }
