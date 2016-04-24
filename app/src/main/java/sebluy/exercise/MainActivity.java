@@ -84,4 +84,8 @@ public class MainActivity extends AppCompatActivity {
     public void finishCalisthenicWorkout() {
         navigate(CALISTHENIC_FEEDBACK);
     }
+
+    public void setCalisthenicFeedback(int pos, boolean b) {
+        state = state.setCalisthenicFeedback(pos, b);
+    }
 }

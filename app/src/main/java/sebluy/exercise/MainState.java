@@ -2,6 +2,8 @@ package sebluy.exercise;
 
 import com.google.auto.value.AutoValue;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +12,7 @@ import auto.parcelgson.AutoParcelGson;
 import static sebluy.exercise.CalisthenicExercise.Template;
 import static sebluy.exercise.CalisthenicExercise.Type;
 import static sebluy.exercise.CalisthenicExercise.generateWorkout;
+import static sebluy.exercise.CalisthenicExercise.names;
 import static sebluy.exercise.CalisthenicExercise.templates;
 import static sebluy.exercise.MainState.Page.Id;
 import static sebluy.exercise.MainState.Page.Id.HOME;
@@ -41,7 +44,8 @@ public abstract class MainState {
                 public abstract List<CalisthenicExercise> workout();
                 public abstract int exerciseIndex();
 
-                public static CalisthenicWorkout create(Map<Type, Template> t, List<CalisthenicExercise> w, int i) {
+                public static CalisthenicWorkout
+                create(Map<Type, Template> t, List<CalisthenicExercise> w, int i) {
                     return new AutoParcelGson_MainState_Page_State_CalisthenicWorkout(t, w, i);
                 }
             }
@@ -49,9 +53,18 @@ public abstract class MainState {
             @AutoParcelGson
             abstract class CalisthenicFeedback implements State {
                 public abstract Map<Type, Template> templates();
+                public abstract List<Boolean> results();
 
-                public static CalisthenicFeedback create(Map<Type, Template> t) {
-                    return new AutoParcelGson_MainState_Page_State_CalisthenicFeedback(t);
+                public static CalisthenicFeedback create(Map<Type, Template> t, List<Boolean> r) {
+                    return new AutoParcelGson_MainState_Page_State_CalisthenicFeedback(t, r);
+                }
+
+                public static CalisthenicFeedback init(Map<Type, Template> t) {
+                    List<Boolean> r = new ArrayList<>(t.size());
+                    for (int i = 0; i < t.size(); i++) {
+                        r.add(i, false);
+                    }
+                    return create(t, Collections.unmodifiableList(r));
                 }
             }
 
@@ -90,8 +103,7 @@ public abstract class MainState {
                         CalisthenicWorkout.create(templates, generateWorkout(), 0));
                 break;
             case CALISTHENIC_FEEDBACK:
-                p = Page.create(CALISTHENIC_FEEDBACK,
-                        CalisthenicFeedback.create(templates));
+                p = Page.create(CALISTHENIC_FEEDBACK, CalisthenicFeedback.init(templates));
                 break;
             default:
                 p = Page.create(id, Empty.create());
@@ -113,6 +125,20 @@ public abstract class MainState {
             return this;
         }
     }
+
+    public MainState setCalisthenicFeedback(int position, boolean b) {
+        CalisthenicFeedback state = (CalisthenicFeedback)page().state();
+        List<Boolean> newResults = new ArrayList<>(state.results());
+        newResults.set(position, b);
+        return MainState.create(
+                Page.create(
+                        CALISTHENIC_FEEDBACK,
+                        CalisthenicFeedback.create(
+                                state.templates(),
+                                Collections.unmodifiableList(newResults))),
+                history());
+    }
+
 
     public MainState back() {
         return MainState.create(history().head(), history().tail());

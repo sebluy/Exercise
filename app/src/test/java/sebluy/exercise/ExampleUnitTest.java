@@ -62,7 +62,17 @@ public class ExampleUnitTest {
         MainState state =
                 MainState.init().navigate(Id.CALISTHENIC_WORKOUT).setCalisthenicExercise(4);
 
-        assertEquals(4, state.page().calisthenicPageState().exerciseIndex());
+        assertEquals(4, ((CalisthenicWorkout)state.page().state()).exerciseIndex());
+    }
+
+    @Test
+    public void setCalisthenicFeedback() throws Exception {
+        MainState state = MainState.init()
+                .navigate(Id.CALISTHENIC_WORKOUT)
+                .navigate(Id.CALISTHENIC_FEEDBACK)
+                .setCalisthenicFeedback(3, true);
+
+        assertEquals(true, ((CalisthenicFeedback)state.page().state()).results().get(3));
     }
 
     @Test

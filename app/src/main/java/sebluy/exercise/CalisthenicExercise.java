@@ -141,6 +141,17 @@ public abstract class CalisthenicExercise implements Parcelable {
                     "Side Lunge"
     )));
 
+    public static final Map<Type, String> names;
+    static {
+        Map<Type, String> t = new HashMap<>();
+        t.put(Type.PUSH_UP, "Push ups");
+        t.put(Type.PULL_UP, "Pull ups");
+        t.put(Type.CORE, "Core");
+        t.put(Type.SQUAT, "Squat");
+        t.put(Type.LUNGE, "Lunge");
+        names = Collections.unmodifiableMap(t);
+    }
+
     public static final Map<Type, Template> templates;
     static {
         Map<Type, Template> t = new HashMap<>();
@@ -152,7 +163,7 @@ public abstract class CalisthenicExercise implements Parcelable {
         templates = Collections.unmodifiableMap(t);
     }
 
-    private static final List<Type> order =
+    public static final List<Type> order =
             Collections.unmodifiableList(
                     Arrays.asList(Type.PUSH_UP, Type.SQUAT, Type.CORE, Type.PULL_UP, Type.LUNGE));
 
