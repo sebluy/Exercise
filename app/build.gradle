@@ -25,6 +25,7 @@ android {
         targetSdkVersion 19
         versionCode 1
         versionName "1.0"
+        testInstrumentationRunner 'android.support.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
         release {
@@ -52,13 +53,29 @@ retrolambda {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
+
     testCompile 'junit:junit:4.12'
+
     compile 'com.github.orhanobut:hawk:1.23'
+
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.android.support:support-v4:23.3.0'
+
     compile "org.functionaljava:functionaljava:4.5"
+
     provided "com.google.auto.value:auto-value:1.2"
     apt "com.google.auto.value:auto-value:1.2"
     compile 'me.tatarka:auto-parcel-gson:0.1'
     apt 'me.tatarka:auto-parcel-gson-processor:0.1'
+
+    androidTestCompile ('com.android.support.test:runner:0.5') {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile ('com.android.support.test:rules:0.5') {
+        exclude module: 'support-annotations'
+    }
+    androidTestCompile ('com.android.support.test.espresso:espresso-core:2.2.2') {
+        exclude module: 'support-annotations'
+    }
+
 }

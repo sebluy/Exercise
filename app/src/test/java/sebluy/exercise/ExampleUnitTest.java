@@ -18,7 +18,8 @@ public class ExampleUnitTest {
 
     @Test
     public void generateCalisthenicWorkout() throws Exception {
-        List<CalisthenicExercise> w = CalisthenicExercise.generateWorkout();
+        List<CalisthenicExercise> w =
+                CalisthenicExercise.generateWorkout(CalisthenicExercise.TEMPLATES);
         for (CalisthenicExercise exercise : w) {
             System.out.println(exercise);
         }

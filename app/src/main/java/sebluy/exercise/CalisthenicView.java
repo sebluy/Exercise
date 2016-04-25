@@ -72,7 +72,7 @@ public class CalisthenicView {
         };
         ViewPager pager = new ViewPager(a);
         pager.setAdapter(adapter);
-        pager.setId(View.generateViewId());
+        pager.setId(R.id.view_pager);
         pager.setCurrentItem(state.exerciseIndex());
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override

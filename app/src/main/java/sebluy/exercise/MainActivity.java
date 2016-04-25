@@ -1,5 +1,6 @@
 package sebluy.exercise;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -24,24 +25,17 @@ public class MainActivity extends AppCompatActivity {
     private MainState state;
     private Menu menu;
 
-    private final String HAWK_MAIN_STATE = "main-state";
-    private final String HAWK_CALISTHENIC = "calisthenic";
+    public static final String HAWK_MAIN_STATE = "main-state";
+    public static final String HAWK_CALISTHENIC = "calisthenic";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!Hawk.isBuilt()) {
-            Hawk.init(this)
-                    .setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
-                    .setStorage(HawkBuilder.newSharedPrefStorage(this))
-                    .setLogLevel(LogLevel.NONE)
-                    .setParser(new GsonParser(GsonConverter.buildGson()))
-                    .build();
-        }
+        initializeHawk(this);
 
         /* for bad states in development */
-        Hawk.remove("main-state");
+//        Hawk.remove("main-state");
 
         state = Hawk.get(HAWK_MAIN_STATE, init());
 
@@ -113,5 +107,16 @@ public class MainActivity extends AppCompatActivity {
         Hawk.put(HAWK_CALISTHENIC, next);
         state = state.back().back(); /* find a better way */
         render();
+    }
+
+    public static void initializeHawk(Context c) {
+        if (!Hawk.isBuilt()) {
+            Hawk.init(c)
+                    .setEncryptionMethod(HawkBuilder.EncryptionMethod.NO_ENCRYPTION)
+                    .setStorage(HawkBuilder.newSharedPrefStorage(c))
+                    .setLogLevel(LogLevel.NONE)
+                    .setParser(new GsonParser(GsonConverter.buildGson()))
+                    .build();
+        }
     }
 }
