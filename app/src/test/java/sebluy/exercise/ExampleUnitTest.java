@@ -47,7 +47,7 @@ public class ExampleUnitTest {
         assertTrue(state.page().state() instanceof Empty);
         assertEquals(state, gsonState);
 
-        state = state.navigate(Id.CALISTHENIC_WORKOUT);
+        state = state.navigateCalisthenicWorkout(CalisthenicExercise.TEMPLATES);
         gsonState = gsonThereAndBack(gson, state, MainState.class);
         assertTrue(state.page().state() instanceof CalisthenicWorkout);
         assertEquals(state, gsonState);
@@ -60,8 +60,9 @@ public class ExampleUnitTest {
 
     @Test
     public void setCalisthenicExercise() throws Exception {
-        MainState state =
-                MainState.init().navigate(Id.CALISTHENIC_WORKOUT).setCalisthenicExercise(4);
+        MainState state = MainState.init()
+                .navigateCalisthenicWorkout(CalisthenicExercise.TEMPLATES)
+                .setCalisthenicExercise(4);
 
         assertEquals(4, ((CalisthenicWorkout)state.page().state()).exerciseIndex());
     }
@@ -69,7 +70,7 @@ public class ExampleUnitTest {
     @Test
     public void setCalisthenicFeedback() throws Exception {
         MainState state = MainState.init()
-                .navigate(Id.CALISTHENIC_WORKOUT)
+                .navigateCalisthenicWorkout(CalisthenicExercise.TEMPLATES)
                 .navigate(Id.CALISTHENIC_FEEDBACK)
                 .setCalisthenicFeedback(3, true);
 

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -59,7 +61,7 @@ public class CalisthenicView {
 
     public static View view(MainActivity a, MainState.Page.State.CalisthenicWorkout state) {
         List<CalisthenicExercise> workout = state.workout();
-        FragmentPagerAdapter adapter = new FragmentPagerAdapter(a.getSupportFragmentManager()) {
+        PagerAdapter adapter = new FragmentStatePagerAdapter(a.getSupportFragmentManager()) {
             @Override
             public Fragment getItem(int position) {
                 return ExerciseFragment.create(workout.get(position));

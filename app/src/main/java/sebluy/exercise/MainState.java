@@ -73,10 +73,6 @@ public abstract class MainState {
 
         }
 
-        public CalisthenicWorkout calisthenicPageState() {
-            return (State.CalisthenicWorkout) state();
-        }
-
         public abstract Id id();
         public abstract State state();
 

@@ -35,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
         initializeHawk(this);
 
         /* for bad states in development */
-//        Hawk.remove("main-state");
+//        Hawk.remove(HAWK_CALISTHENIC);
+//        Hawk.remove(HAWK_MAIN_STATE);
 
         state = Hawk.get(HAWK_MAIN_STATE, init());
 
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onSaveInstanceState(Bundle b) {
-        Hawk.put("main-state", state);
+        Hawk.put(HAWK_MAIN_STATE, state);
         super.onSaveInstanceState(b);
     }
 
@@ -78,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
         switch (id) {
             case CALISTHENIC_WORKOUT:
                 Map<Type, Template> templates =
-                        Hawk.get("calisthenic", CalisthenicExercise.TEMPLATES);
+                        Hawk.get(HAWK_CALISTHENIC, CalisthenicExercise.TEMPLATES);
                 state = state.navigateCalisthenicWorkout(templates);
                 break;
             default:
