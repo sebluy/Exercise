@@ -3,6 +3,7 @@ package sebluy.exercise;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
 import android.view.View;
+import android.widget.ListView;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -19,6 +20,7 @@ import sebluy.exercise.CalisthenicExercise.Type;
 import sebluy.exercise.CalisthenicExercise.Template;
 import sebluy.exercise.MainState.Page.State.CalisthenicWorkout;
 
+import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.swipeLeft;
@@ -28,6 +30,7 @@ import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 
 @RunWith(AndroidJUnit4.class)
 public class MainActivityInstrumentationTest {
@@ -63,23 +66,49 @@ public class MainActivityInstrumentationTest {
     }
 
     @Test
-    public void testCalisthenic() throws Exception {
+    public void calisthenicWorkout() throws Exception {
         MainActivity a = (MainActivity)activityRule.getActivity();
         onView(withText("Calisthenic")).perform(click());
         MainState state = a.getState();
         List<CalisthenicExercise> workout = ((CalisthenicWorkout)state.page().state()).workout();
         checkWorkoutMatchesView(workout);
-        onView(withText("Finish")).perform(click());
-        onView(withText("Push ups")).perform(click());
-        onView(withText("Commit")).perform(click());
-        onView(withText("Calisthenic")).perform(click());
+    }
 
-        // kind of a hack
+    @Test
+    public void calisthenicFeedback() throws Exception {
+        onView(withText("Calisthenic")).perform(click());
+        onView(withText("Finish")).perform(click());
+        onData(anything()).atPosition(0).check(matches(withText("Push ups")));
+        onData(anything()).atPosition(1).check(matches(withText("Squat")));
+        onData(anything()).atPosition(2).check(matches(withText("Core")));
+        onData(anything()).atPosition(3).check(matches(withText("Pull ups")));
+        onData(anything()).atPosition(4).check(matches(withText("Lunge")));
+    }
+
+    // kind of a hack
+    public void pressBack() {
         activityRule.getActivity().runOnUiThread(() ->
                 activityRule.getActivity().onBackPressed()
         );
+    }
 
+    @Test
+    public void navigation() throws Exception {
+        MainActivity a = (MainActivity)activityRule.getActivity();
+
+        onView(withText("Calisthenic")).perform(click());
+        pressBack();
+
+        onView(withText("Calisthenic")).perform(click());
+        onView(withText("Finish")).perform(click());
+        pressBack();
+        pressBack();
+
+        onView(withText("Calisthenic")).perform(click());
+        onView(withText("Finish")).perform(click());
+        onView(withText("Commit")).perform(click());
         onView(withText("Calisthenic")).check(matches(isDisplayed()));
+
     }
 
 
