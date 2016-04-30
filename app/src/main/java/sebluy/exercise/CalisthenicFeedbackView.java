@@ -28,10 +28,7 @@ public class CalisthenicFeedbackView {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        Map<CalisthenicExercise.Type, CalisthenicExercise.Template> templates =
-                state.templates();
-
-        List<String> typeNames = new ArrayList<>(templates.size());
+        List<String> typeNames = new ArrayList<>(CalisthenicExercise.ORDER.size());
         for (Type t : CalisthenicExercise.ORDER) {
             typeNames.add(CalisthenicExercise.names.get(t));
         }

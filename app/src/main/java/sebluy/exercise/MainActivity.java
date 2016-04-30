@@ -103,8 +103,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void commitCalisthenicWorkout() {
         CalisthenicFeedback feedback = (CalisthenicFeedback)state.page().state();
+        Map<Type, Template> last = Hawk.get(HAWK_CALISTHENIC, CalisthenicExercise.TEMPLATES);
         Map<Type, Template> next =
-                CalisthenicExercise.nextTemplates(feedback.templates(), feedback.results());
+                CalisthenicExercise.nextTemplates(last, feedback.results());
         Hawk.put(HAWK_CALISTHENIC, next);
         state = state.back().back(); /* find a better way */
         render();
@@ -119,5 +120,9 @@ public class MainActivity extends AppCompatActivity {
                     .setParser(new GsonParser(GsonConverter.buildGson()))
                     .build();
         }
+    }
+
+    public MainState getState() {
+        return state;
     }
 }

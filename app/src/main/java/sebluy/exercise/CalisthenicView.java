@@ -3,7 +3,6 @@ package sebluy.exercise;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -19,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.List;
+
+import sebluy.exercise.MainState.Page.State.CalisthenicWorkout;
 
 public class CalisthenicView {
 
@@ -59,7 +60,7 @@ public class CalisthenicView {
         }
     }
 
-    public static View view(MainActivity a, MainState.Page.State.CalisthenicWorkout state) {
+    public static View view(MainActivity a, CalisthenicWorkout state) {
         List<CalisthenicExercise> workout = state.workout();
         PagerAdapter adapter = new FragmentStatePagerAdapter(a.getSupportFragmentManager()) {
             @Override
@@ -75,7 +76,7 @@ public class CalisthenicView {
         ViewPager pager = new ViewPager(a);
         pager.setAdapter(adapter);
         pager.setId(R.id.view_pager);
-        pager.setCurrentItem(state.exerciseIndex());
+        pager.setCurrentItem(state.position());
         pager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
