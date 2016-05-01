@@ -2,8 +2,6 @@ package sebluy.exercise;
 
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
-import android.view.View;
-import android.widget.ListView;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -13,22 +11,25 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import sebluy.exercise.CalisthenicExercise.Type;
 import sebluy.exercise.CalisthenicExercise.Template;
+import sebluy.exercise.CalisthenicExercise.Type;
 import sebluy.exercise.MainState.Page.State.CalisthenicWorkout;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.action.ViewActions.longClick;
 import static android.support.test.espresso.action.ViewActions.swipeLeft;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.ViewMatchers.hasSibling;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static junit.framework.Assert.assertEquals;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 
@@ -94,8 +95,6 @@ public class MainActivityInstrumentationTest {
 
     @Test
     public void navigation() throws Exception {
-        MainActivity a = (MainActivity)activityRule.getActivity();
-
         onView(withText("Calisthenic")).perform(click());
         pressBack();
 
@@ -109,6 +108,19 @@ public class MainActivityInstrumentationTest {
         onView(withText("Commit")).perform(click());
         onView(withText("Calisthenic")).check(matches(isDisplayed()));
 
+    }
+
+    @Test
+    public void resetCalisthenicTemplates() throws Exception {
+        Hawk.put(MainActivity.HAWK_CALISTHENIC,
+                CalisthenicExercise.nextTemplates(
+                        CalisthenicExercise.TEMPLATES,
+                        Arrays.asList(true, true, true, true, true)));
+        onView(withText("Calisthenic")).perform(longClick());
+        onView(withText("Reset to defaults")).perform(click());
+        assertEquals(
+                CalisthenicExercise.TEMPLATES,
+                Hawk.get(MainActivity.HAWK_CALISTHENIC, CalisthenicExercise.TEMPLATES));
     }
 
 

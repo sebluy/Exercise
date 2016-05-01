@@ -27,8 +27,8 @@ public class MainView {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.WRAP_CONTENT));
 
+        a.registerForContextMenu(list);
         list.setOnItemClickListener((parent, v, pos, id) -> a.navigate(workoutPageIds.get(pos)));
-
         list.setAdapter(new ArrayAdapter<>(a, android.R.layout.simple_list_item_1, workoutNames));
 
         return list;

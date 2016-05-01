@@ -3,7 +3,11 @@ package sebluy.exercise;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.orhanobut.hawk.GsonParser;
 import com.orhanobut.hawk.Hawk;
@@ -124,5 +128,12 @@ public class MainActivity extends AppCompatActivity {
 
     public MainState getState() {
         return state;
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu m, View v, ContextMenuInfo i) {
+        super.onCreateContextMenu(m, v, i);
+        MenuItem item = m.add("Reset to defaults");
+        item.setOnMenuItemClickListener((menuItem) -> Hawk.remove(HAWK_CALISTHENIC));
     }
 }

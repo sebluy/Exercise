@@ -1,7 +1,5 @@
 Todo:
 
-Change page.pageState() to page.state()
-
 Implement persistent storage for workout "templates" (find good name, maybe seed).
     - modify workout progression semantics
         - be careful putting templates in gson/hawk
